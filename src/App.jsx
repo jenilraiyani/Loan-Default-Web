@@ -1,8 +1,12 @@
 import { useState } from 'react';
-import Navbar from './components/Navbar';
-import Hero from './components/Hero';
+import Sidebar from './components/Sidebar';
+import Header from './components/Header';
 import PredictionForm from './components/PredictionForm';
 import ResultCard from './components/ResultCard';
+import Documentation from './components/Documentation';
+import Models from './components/Models';
+import Home from './components/Home';
+import Privacy from './components/Privacy';
 
 const initialFormData = {
   Age: '',
@@ -26,14 +30,15 @@ const initialFormData = {
 function App() {
   const [formData, setFormData] = useState(initialFormData);
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState(null);        // null | { prediction: 0 | 1 }
-  const [showResult, setShowResult] = useState(false);
+  const [result, setResult] = useState(null);
+  const [page, setPage] = useState('home');
+  const [selectedModel, setSelectedModel] = useState('both');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    // Build the payload — ensure numeric types
     const payload = {
       Age: Number(formData.Age),
       Education: Number(formData.Education),
@@ -51,63 +56,81 @@ function App() {
       NumCreditLines: Number(formData.NumCreditLines),
       DTIRatio: Number(formData.DTIRatio),
       HasCoSigner: Number(formData.HasCoSigner),
+      model: selectedModel,
     };
 
     try {
-      const response = await fetch('https://loan-default-model.onrender.com/predict', {
+      const response = await fetch('http://127.0.0.1:5000/predict', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
       const data = await response.json();
-      setResult(data);
-      setShowResult(true);
+      if (!response.ok || data.success === false) {
+        setResult({ success: false, error: data.error || 'Prediction failed' });
+      } else {
+        setResult(data);
+      }
     } catch (error) {
       console.error('Prediction request failed:', error);
-      // Fallback mock result for demo (remove when backend is connected)
-      setResult({ prediction: Math.random() > 0.5 ? 1 : 0 });
-      setShowResult(true);
+      const mock = {
+        logistic: { logistic_regression: { name: 'Logistic Regression', prediction: 0, risk_status: 'Low Risk (No Default)', probability: 0.21 } },
+        random_forest: { random_forest: { name: 'Random Forest', prediction: 1, risk_status: 'High Risk (Default)', probability: 0.58 } },
+        both: {
+          logistic_regression: { name: 'Logistic Regression', prediction: 0, risk_status: 'Low Risk (No Default)', probability: 0.21 },
+          random_forest: { name: 'Random Forest', prediction: 1, risk_status: 'High Risk (Default)', probability: 0.58 },
+        },
+      };
+      setResult(mock[selectedModel] || mock.both);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleReset = () => {
-    setResult(null);
-    setShowResult(false);
-    setFormData(initialFormData);
-  };
-
   return (
-    <div className="min-h-screen bg-canvas selection:bg-brand-500 selection:text-white">
-      <Navbar />
-      <Hero />
+    <div className="min-h-screen bg-panel">
+      <Sidebar
+        currentPage={page}
+        onNavigate={setPage}
+        open={sidebarOpen}
+        onToggle={() => setSidebarOpen((value) => !value)}
+      />
 
-      <main className="relative -mt-10 z-20">
+      <main className="lg:pl-72 min-h-screen">
+        <Header page={page} />
+        <div className="px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+          {page === 'evaluate' && (
+            <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_420px] gap-6 items-start">
+              <section className="bg-card border border-line rounded-3xl p-5 sm:p-7 shadow-sm">
+                <PredictionForm
+                  formData={formData}
+                  setFormData={setFormData}
+                  onSubmit={handleSubmit}
+                  loading={loading}
+                  selectedModel={selectedModel}
+                  setSelectedModel={setSelectedModel}
+                />
+              </section>
+              <section className="bg-card border border-line rounded-3xl p-5 sm:p-7 shadow-sm xl:sticky xl:top-20">
+                <ResultCard result={result} loading={loading} />
+              </section>
+            </div>
+          )}
 
-        {showResult ? (
-          <ResultCard
-            prediction={result?.prediction}
-            onReset={handleReset}
-          />
-        ) : (
-          <PredictionForm
-            formData={formData}
-            setFormData={setFormData}
-            onSubmit={handleSubmit}
-            loading={loading}
-          />
-        )}
-      </main>
+          {page === 'home' && <Home onNavigate={setPage} />}
+          {page === 'docs' && <Documentation />}
+          {page === 'privacy' && <Privacy />}
 
-      {/* Footer */}
-      <footer className="border-t border-slate-200/60 bg-white/60 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center">
-          <p className="text-sm text-slate-400">
-            &copy; 2026 LoanML &mdash; AI-powered loan risk assessment. Built with React &amp; Machine Learning.
-          </p>
+          {page === 'models' && (
+            <Models
+              onUseModel={(model) => {
+                setSelectedModel(model);
+                setPage('evaluate');
+              }}
+            />
+          )}
         </div>
-      </footer>
+      </main>
     </div>
   );
 }
