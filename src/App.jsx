@@ -32,7 +32,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [page, setPage] = useState('home');
-  const [selectedModel, setSelectedModel] = useState('both');
+  const [selectedModel, setSelectedModel] = useState('random_forest');
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleSubmit = async (e) => {
