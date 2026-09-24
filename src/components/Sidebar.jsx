@@ -62,7 +62,7 @@ const Sidebar = ({ currentPage, onNavigate, open, onToggle }) => {
                 </nav>
 
                 <div className="px-6 py-5 border-t border-white/10 text-xs text-slate-500">
-                    5 Unit-3 classifiers ready
+                    
                 </div>
             </aside>
         </>
