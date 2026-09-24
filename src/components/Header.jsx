@@ -14,7 +14,7 @@ const Header = ({ page }) => {
                 <span className="text-line">|</span>
                 <h1 className="text-sm font-semibold truncate">{titles[page] || 'LoanML'}</h1>
             </div>
-            <p className="hidden sm:block text-xs text-muted">Logistic Regression · Random Forest</p>
+            <p className="hidden sm:block text-xs text-muted">5 models · Unit-3 Classification</p>
         </header>
     );
 };

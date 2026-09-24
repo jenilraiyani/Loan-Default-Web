@@ -1,7 +1,13 @@
 import { ShieldCheck, AlertTriangle } from 'lucide-react';
 
 const ResultCard = ({ result, loading }) => {
-    const models = [result?.logistic_regression, result?.random_forest].filter(Boolean);
+    const models = [
+        result?.logistic_regression,
+        result?.decision_tree,
+        result?.naive_bayes,
+        result?.random_forest,
+        result?.adaboost,
+    ].filter(Boolean);
     const displayModels = models.length
         ? models
         : (result?.prediction != null

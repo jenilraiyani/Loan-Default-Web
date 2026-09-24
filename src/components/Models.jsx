@@ -1,3 +1,25 @@
+const treeImportance = [
+    { name: 'Age', value: 17.24 },
+    { name: 'Income', value: 17.19 },
+    { name: 'Interest rate', value: 16.72 },
+    { name: 'Loan amount', value: 16.60 },
+    { name: 'Months employed', value: 10.91 },
+    { name: 'Credit score', value: 7.20 },
+    { name: 'DTI ratio', value: 4.20 },
+    { name: 'Employment type', value: 1.89 },
+];
+
+const adaImportance = [
+    { name: 'Age', value: 46.74 },
+    { name: 'Interest rate', value: 11.75 },
+    { name: 'Income', value: 11.53 },
+    { name: 'Months employed', value: 7.24 },
+    { name: 'Loan amount', value: 5.87 },
+    { name: 'Employment type', value: 3.15 },
+    { name: 'Credit score', value: 2.26 },
+    { name: 'Has co-signer', value: 2.15 },
+];
+
 const logisticImportance = [
     { name: 'Age', value: 22.84, direction: 'Protects (lower default)' },
     { name: 'Interest rate', value: 17.82, direction: 'Raises default risk' },
@@ -20,15 +42,65 @@ const forestImportance = [
     { name: 'Employment type', value: 1.93 },
 ];
 
+const modelCards = [
+    {
+        id: 'logistic',
+        name: 'Logistic Regression',
+        kind: 'Linear baseline',
+        accuracy: '88.59%',
+        file: 'logistic_model.pkl',
+        className: 'LogisticRegression(max_iter=1000)',
+        notes: ['Fast and easy to explain', 'Uses linear weights for feature impact'],
+        importance: logisticImportance,
+        showDirection: true,
+    },
+    {
+        id: 'decision_tree',
+        name: 'Decision Tree',
+        kind: 'Tree classifier',
+        accuracy: '87.51%',
+        file: 'decision_tree_model.pkl',
+        className: 'DecisionTreeClassifier(max_depth=12)',
+        notes: ['Unit-3 core algorithm', 'Readable rule-style splits'],
+        importance: treeImportance,
+    },
+    {
+        id: 'naive_bayes',
+        name: 'Naive Bayes',
+        kind: 'Probabilistic classifier',
+        accuracy: '88.54%',
+        file: 'naive_bayes_model.pkl',
+        className: 'GaussianNB()',
+        notes: ['Based on Bayes theorem', 'Not an ensemble / not bagging'],
+        importance: null,
+    },
+    {
+        id: 'random_forest',
+        name: 'Random Forest',
+        kind: 'Bagging ensemble',
+        accuracy: '88.63%',
+        file: 'rf_model.pkl',
+        className: 'RandomForestClassifier(n_estimators=100)',
+        notes: ['Tuned with GridSearchCV', 'Default model on the prediction desk'],
+        importance: forestImportance,
+    },
+    {
+        id: 'adaboost',
+        name: 'AdaBoost',
+        kind: 'Boosting ensemble',
+        accuracy: '88.61%',
+        file: 'adaboost_model.pkl',
+        className: 'AdaBoostClassifier(n_estimators=50)',
+        notes: ['Unit-3 boosting example', 'Focuses on hard-to-classify samples'],
+        importance: adaImportance,
+    },
+];
+
 const comparison = [
-    { metric: 'Library', logistic: 'scikit-learn LogisticRegression', forest: 'scikit-learn RandomForestClassifier' },
-    { metric: 'Role', logistic: 'Baseline linear model', forest: 'Advanced ensemble model' },
-    { metric: 'Test accuracy', logistic: '88.59%', forest: '88.63%' },
-    { metric: '5-fold CV accuracy', logistic: '—', forest: '88.55%' },
-    { metric: 'Key settings', logistic: 'max_iter = 1000', forest: 'n_estimators = 100, max_depth = 10, min_samples_split = 2' },
-    { metric: 'Tuning', logistic: 'Default library fit', forest: 'GridSearchCV, cv = 3' },
-    { metric: 'Top feature', logistic: 'Age (22.84%)', forest: 'Age (22.75%)' },
-    { metric: 'Strength', logistic: 'Fast and easy to explain', forest: 'Slightly higher test accuracy' },
+    { metric: 'Type', logistic: 'Linear', tree: 'Tree', nb: 'Probabilistic', forest: 'Bagging', ada: 'Boosting' },
+    { metric: 'Test accuracy', logistic: '88.59%', tree: '87.51%', nb: '88.54%', forest: '88.63%', ada: '88.61%' },
+    { metric: 'Library', logistic: 'sklearn', tree: 'sklearn', nb: 'sklearn', forest: 'sklearn', ada: 'sklearn' },
+    { metric: 'From PPT Unit-3', logistic: 'Yes', tree: 'Yes', nb: 'Yes', forest: 'Yes', ada: 'Yes' },
 ];
 
 const ImportanceList = ({ items, showDirection }) => (
@@ -56,78 +128,71 @@ const Models = ({ onUseModel }) => {
             <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent">Registry</p>
             <h2 className="text-3xl font-semibold mt-2 mb-2">Models</h2>
             <p className="text-muted mb-8">
-                Both models use scikit-learn, the same 16 features, and the same 80/20 train-test split on Loan_default.csv.
+                Five scikit-learn models from Unit-3 Classification, trained on the same 16 features and Loan_default.csv split.
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <article className="rounded-2xl border border-line bg-card p-6">
-                    <h3 className="text-xl font-semibold">Logistic Regression</h3>
-                    <p className="text-sm text-muted mt-1">Library: scikit-learn</p>
-                    <p className="font-mono text-3xl font-semibold mt-4">88.59%</p>
-                    <p className="text-xs text-muted mt-1">Test-set accuracy</p>
-                    <ul className="mt-5 space-y-2 text-sm text-muted">
-                        <li>• Class: <span className="text-ink">LogisticRegression(max_iter=1000)</span></li>
-                        <li>• Saved file: logistic_model.pkl</li>
-                        <li>• Reads linear weights to rank feature impact</li>
-                        <li>• Fast baseline used in Task 4</li>
-                    </ul>
-                    <h4 className="text-sm font-semibold mt-6 mb-3">Feature importance</h4>
-                    <ImportanceList items={logisticImportance} showDirection />
-                    <button
-                        type="button"
-                        onClick={() => onUseModel('logistic')}
-                        className="mt-6 w-full h-11 rounded-xl bg-ink text-white font-medium hover:bg-ink-soft"
-                    >
-                        Use on prediction desk
-                    </button>
-                </article>
-
-                <article className="rounded-2xl border border-line bg-card p-6">
-                    <h3 className="text-xl font-semibold">Random Forest</h3>
-                    <p className="text-sm text-muted mt-1">Library: scikit-learn</p>
-                    <p className="font-mono text-3xl font-semibold mt-4">88.63%</p>
-                    <p className="text-xs text-muted mt-1">Test-set accuracy · CV 88.55%</p>
-                    <ul className="mt-5 space-y-2 text-sm text-muted">
-                        <li>• Class: <span className="text-ink">RandomForestClassifier</span></li>
-                        <li>• Best params: 100 trees, depth 10, min split 2</li>
-                        <li>• Tuned with GridSearchCV</li>
-                        <li>• Saved file: rf_model.pkl</li>
-                    </ul>
-                    <h4 className="text-sm font-semibold mt-6 mb-3">Feature importance</h4>
-                    <ImportanceList items={forestImportance} />
-                    <button
-                        type="button"
-                        onClick={() => onUseModel('random_forest')}
-                        className="mt-6 w-full h-11 rounded-xl bg-ink text-white font-medium hover:bg-ink-soft"
-                    >
-                        Use on prediction desk
-                    </button>
-                </article>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                {modelCards.map((model) => (
+                    <article key={model.id} className="rounded-2xl border border-line bg-card p-6 flex flex-col">
+                        <h3 className="text-xl font-semibold">{model.name}</h3>
+                        <p className="text-sm text-muted mt-1">{model.kind}</p>
+                        <p className="font-mono text-3xl font-semibold mt-4">{model.accuracy}</p>
+                        <p className="text-xs text-muted mt-1">Test-set accuracy</p>
+                        <ul className="mt-5 space-y-2 text-sm text-muted">
+                            <li>• Class: <span className="text-ink">{model.className}</span></li>
+                            <li>• Saved file: {model.file}</li>
+                            {model.notes.map((note) => (
+                                <li key={note}>• {note}</li>
+                            ))}
+                        </ul>
+                        {model.importance ? (
+                            <>
+                                <h4 className="text-sm font-semibold mt-6 mb-3">Feature importance</h4>
+                                <ImportanceList items={model.importance} showDirection={model.showDirection} />
+                            </>
+                        ) : (
+                            <p className="text-sm text-muted mt-6">
+                                Naive Bayes does not expose tree-style feature importance. It scores using class-conditional probabilities.
+                            </p>
+                        )}
+                        <button
+                            type="button"
+                            onClick={() => onUseModel(model.id)}
+                            className="mt-6 w-full h-11 rounded-xl bg-ink text-white font-medium hover:bg-ink-soft"
+                        >
+                            Use on prediction desk
+                        </button>
+                    </article>
+                ))}
             </div>
 
-            <article className="rounded-2xl border border-line bg-card p-6 mt-5">
+            <article className="rounded-2xl border border-line bg-card p-6 mt-5 overflow-x-auto">
                 <h3 className="text-xl font-semibold mb-1">Model comparison</h3>
-                <p className="text-sm text-muted mb-5">Same test data. Random Forest is slightly ahead on accuracy.</p>
-                <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                        <thead>
-                            <tr className="text-left border-b border-line">
-                                <th className="py-3 pr-4 font-semibold">Metric</th>
-                                <th className="py-3 pr-4 font-semibold">Logistic Regression</th>
-                                <th className="py-3 font-semibold">Random Forest</th>
+                <p className="text-sm text-muted mb-5">Same test data. Random Forest leads slightly on accuracy.</p>
+                <table className="w-full text-sm min-w-[760px]">
+                    <thead>
+                        <tr className="text-left border-b border-line">
+                            <th className="py-3 pr-3 font-semibold">Metric</th>
+                            <th className="py-3 pr-3 font-semibold">Logistic</th>
+                            <th className="py-3 pr-3 font-semibold">Decision Tree</th>
+                            <th className="py-3 pr-3 font-semibold">Naive Bayes</th>
+                            <th className="py-3 pr-3 font-semibold">Random Forest</th>
+                            <th className="py-3 font-semibold">AdaBoost</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {comparison.map((row) => (
+                            <tr key={row.metric} className="border-b border-line/70">
+                                <td className="py-3 pr-3 font-medium whitespace-nowrap">{row.metric}</td>
+                                <td className="py-3 pr-3 text-muted">{row.logistic}</td>
+                                <td className="py-3 pr-3 text-muted">{row.tree}</td>
+                                <td className="py-3 pr-3 text-muted">{row.nb}</td>
+                                <td className="py-3 pr-3 text-muted">{row.forest}</td>
+                                <td className="py-3 text-muted">{row.ada}</td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            {comparison.map((row) => (
-                                <tr key={row.metric} className="border-b border-line/70">
-                                    <td className="py-3 pr-4 font-medium whitespace-nowrap">{row.metric}</td>
-                                    <td className="py-3 pr-4 text-muted">{row.logistic}</td>
-                                    <td className="py-3 text-muted">{row.forest}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                        ))}
+                    </tbody>
+                </table>
             </article>
         </div>
     );

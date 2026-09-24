@@ -75,13 +75,19 @@ function App() {
       console.error('Prediction request failed:', error);
       const mock = {
         logistic: { logistic_regression: { name: 'Logistic Regression', prediction: 0, risk_status: 'Low Risk (No Default)', probability: 0.21 } },
+        decision_tree: { decision_tree: { name: 'Decision Tree', prediction: 0, risk_status: 'Low Risk (No Default)', probability: 0.28 } },
+        naive_bayes: { naive_bayes: { name: 'Naive Bayes', prediction: 0, risk_status: 'Low Risk (No Default)', probability: 0.19 } },
         random_forest: { random_forest: { name: 'Random Forest', prediction: 1, risk_status: 'High Risk (Default)', probability: 0.58 } },
-        both: {
+        adaboost: { adaboost: { name: 'AdaBoost', prediction: 0, risk_status: 'Low Risk (No Default)', probability: 0.24 } },
+        all: {
           logistic_regression: { name: 'Logistic Regression', prediction: 0, risk_status: 'Low Risk (No Default)', probability: 0.21 },
+          decision_tree: { name: 'Decision Tree', prediction: 0, risk_status: 'Low Risk (No Default)', probability: 0.28 },
+          naive_bayes: { name: 'Naive Bayes', prediction: 0, risk_status: 'Low Risk (No Default)', probability: 0.19 },
           random_forest: { name: 'Random Forest', prediction: 1, risk_status: 'High Risk (Default)', probability: 0.58 },
+          adaboost: { name: 'AdaBoost', prediction: 0, risk_status: 'Low Risk (No Default)', probability: 0.24 },
         },
       };
-      setResult(mock[selectedModel] || mock.both);
+      setResult(mock[selectedModel] || mock.all);
     } finally {
       setLoading(false);
     }

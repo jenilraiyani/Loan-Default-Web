@@ -85,11 +85,14 @@ const PredictionForm = ({ formData, setFormData, onSubmit, loading, selectedMode
 
             <div className="mb-5">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted mb-2">Model</p>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                     {[
                         { value: 'logistic', label: 'Logistic' },
+                        { value: 'decision_tree', label: 'Decision Tree' },
+                        { value: 'naive_bayes', label: 'Naive Bayes' },
                         { value: 'random_forest', label: 'Forest' },
-                        { value: 'both', label: 'Both' },
+                        { value: 'adaboost', label: 'AdaBoost' },
+                        { value: 'all', label: 'All' },
                     ].map((option) => (
                         <button
                             key={option.value}
